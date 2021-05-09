@@ -1,3 +1,4 @@
 /mnt/d/Documentos/Vision artificial/Talleres/Taller_segmentacion/Segmentation_OPENCV/build/CMakeFiles/rebuild_cache.dir
 /mnt/d/Documentos/Vision artificial/Talleres/Taller_segmentacion/Segmentation_OPENCV/build/CMakeFiles/edit_cache.dir
+/mnt/d/Documentos/Vision artificial/Talleres/Taller_segmentacion/Segmentation_OPENCV/build/CMakeFiles/segmentacion.dir
 /mnt/d/Documentos/Vision artificial/Talleres/Taller_segmentacion/Segmentation_OPENCV/build/CMakeFiles/Segmentacion_regiones.dir

@@ -53,6 +53,7 @@ CMAKE_BINARY_DIR = "/mnt/d/Documentos/Vision artificial/Talleres/Taller_segmenta
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/segmentacion.dir/all
 all: CMakeFiles/Segmentacion_regiones.dir/all
 
 .PHONY : all
@@ -63,9 +64,37 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/segmentacion.dir/clean
 clean: CMakeFiles/Segmentacion_regiones.dir/clean
 
 .PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/segmentacion.dir
+
+# All Build rule for target.
+CMakeFiles/segmentacion.dir/all:
+	$(MAKE) -f CMakeFiles/segmentacion.dir/build.make CMakeFiles/segmentacion.dir/depend
+	$(MAKE) -f CMakeFiles/segmentacion.dir/build.make CMakeFiles/segmentacion.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/mnt/d/Documentos/Vision artificial/Talleres/Taller_segmentacion/Segmentation_OPENCV/build/CMakeFiles" --progress-num=3,4 "Built target segmentacion"
+.PHONY : CMakeFiles/segmentacion.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/segmentacion.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/d/Documentos/Vision artificial/Talleres/Taller_segmentacion/Segmentation_OPENCV/build/CMakeFiles" 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/segmentacion.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/d/Documentos/Vision artificial/Talleres/Taller_segmentacion/Segmentation_OPENCV/build/CMakeFiles" 0
+.PHONY : CMakeFiles/segmentacion.dir/rule
+
+# Convenience name for target.
+segmentacion: CMakeFiles/segmentacion.dir/rule
+
+.PHONY : segmentacion
+
+# clean rule for target.
+CMakeFiles/segmentacion.dir/clean:
+	$(MAKE) -f CMakeFiles/segmentacion.dir/build.make CMakeFiles/segmentacion.dir/clean
+.PHONY : CMakeFiles/segmentacion.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/Segmentacion_regiones.dir

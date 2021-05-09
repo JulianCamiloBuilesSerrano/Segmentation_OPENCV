@@ -39,5 +39,7 @@ MARK_AS_ADVANCED(
 
 ADD_EXECUTABLE( Segmentacion_regiones Segmentacion_regiones.cxx )
 TARGET_LINK_LIBRARIES( Segmentacion_regiones ${OpenCV_LIBS} )
+ADD_EXECUTABLE( segmentacion segmentacion.cxx )
+TARGET_LINK_LIBRARIES( segmentacion ${OpenCV_LIBS} )
 
 

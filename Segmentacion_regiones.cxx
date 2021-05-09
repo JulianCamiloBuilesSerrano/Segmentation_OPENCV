@@ -5,11 +5,13 @@
 using namespace cv;
 Mat crecimiento_regiones(Mat image);
 void Crecimiento_Regiones_aux(Mat *image, Mat *reg, int i, int j, bool **est);
-bool evaluacion_pixel(Vec3b punto1, Vec3b punto2,float criterio);
+bool evaluacion_pixel(float punto1, float punto2);
 float desviacion(Mat *image, int i, int j);
+bool verificar(Mat *image, int i, int j);
+float criterio = 3;
 int main(int argc, char const *argv[])
 {
-    if (argc < 2)
+    if (argc < 3)
     {
         std::cerr << "Usage: " << argv[0] << std::endl;
         return (-1);
@@ -30,6 +32,7 @@ int main(int argc, char const *argv[])
         std::cerr << "Error: No image data" << std::endl;
         return (-1);
     }
+    criterio = atof(argv[2]);
     /*MatIterator_<Vec3b> it,end;
     it = image.begin<Vec3b>();
     end = image.end<Vec3b>();
@@ -54,16 +57,16 @@ Mat crecimiento_regiones(Mat image)
 {
     Mat reg = Mat::ones(image.rows, image.cols, image.type());
     //Mat est = Mat::zeros(image.rows, image.cols, image.type());
-    bool **est = new bool *[image.cols];
-    for (int i = 0; i < image.cols; i++)
+    bool **est = new bool *[image.rows];
+    for (int i = 0; i < image.rows; i++)
     {
-        est[i] = new bool[image.rows];
+        est[i] = new bool[image.cols];
     }
-    for (int i = 0; i < image.cols; i++)
+    for (int i = 0; i < image.rows; i++)
     {
-        for (int j = 0; j < image.rows; j++)
+        for (int j = 0; j < image.cols; j++)
         {
-            est[i][j] = false;
+            est[i][j] = 0;
             //std::cout << est[i][j]<<std::endl;
         }
     }
@@ -74,118 +77,130 @@ Mat crecimiento_regiones(Mat image)
 float desviacion(Mat *image, int i, int j)
 {
     float var;
-    for (int k = 0; k < 3; k++)
+    int arr[] = {
+        (int)image->at<Vec3b>(i, j)[0],
+        (int)image->at<Vec3b>(i + 1, j)[0],
+        (int)image->at<Vec3b>(i - 1, j)[0],
+        (int)image->at<Vec3b>(i, j + 1)[0],
+        (int)image->at<Vec3b>(i, j - 1)[0],
+        (int)image->at<Vec3b>(i + 1, j + 1)[0],
+        (int)image->at<Vec3b>(i + 1, j - 1)[0],
+        (int)image->at<Vec3b>(i - 1, j - 1)[0],
+        (int)image->at<Vec3b>(i - 1, j + 1)[0],
+        (int)image->at<Vec3b>(i, j)[1],
+        (int)image->at<Vec3b>(i + 1, j)[1],
+        (int)image->at<Vec3b>(i - 1, j)[1],
+        (int)image->at<Vec3b>(i, j + 1)[1],
+        (int)image->at<Vec3b>(i, j - 1)[1],
+        (int)image->at<Vec3b>(i + 1, j + 1)[1],
+        (int)image->at<Vec3b>(i + 1, j - 1)[1],
+        (int)image->at<Vec3b>(i - 1, j - 1)[1],
+        (int)image->at<Vec3b>(i - 1, j + 1)[1],
+        (int)image->at<Vec3b>(i, j)[2],
+        (int)image->at<Vec3b>(i + 1, j)[2],
+        (int)image->at<Vec3b>(i - 1, j)[2],
+        (int)image->at<Vec3b>(i, j + 1)[2],
+        (int)image->at<Vec3b>(i, j - 1)[2],
+        (int)image->at<Vec3b>(i + 1, j + 1)[2],
+        (int)image->at<Vec3b>(i + 1, j - 1)[2],
+        (int)image->at<Vec3b>(i - 1, j - 1)[2],
+        (int)image->at<Vec3b>(i - 1, j + 1)[2]};
+        
+    float prom = 0;
+    for (int g = 0; g < 27; g++)
     {
-        int arr[] = {
-            (int)image->at<Vec3b>(i, j)[0],
-            (int)image->at<Vec3b>(i + 1, j)[0],
-            (int)image->at<Vec3b>(i - 2, j)[0],
-            (int)image->at<Vec3b>(i, j + 1)[0],
-            (int)image->at<Vec3b>(i, j - 1)[0],
-            (int)image->at<Vec3b>(i + 1, j + 1)[0],
-            (int)image->at<Vec3b>(i + 1, j - 1)[0],
-            (int)image->at<Vec3b>(i - 1, j - 1)[0],
-            (int)image->at<Vec3b>(i - 1, j + 1)[0],
-            (int)image->at<Vec3b>(i, j)[1],
-            (int)image->at<Vec3b>(i + 1, j)[1],
-            (int)image->at<Vec3b>(i - 2, j)[1],
-            (int)image->at<Vec3b>(i, j + 1)[1],
-            (int)image->at<Vec3b>(i, j - 1)[1],
-            (int)image->at<Vec3b>(i + 1, j + 1)[1],
-            (int)image->at<Vec3b>(i + 1, j - 1)[1],
-            (int)image->at<Vec3b>(i - 1, j - 1)[1],
-            (int)image->at<Vec3b>(i - 1, j + 1)[1],
-            (int)image->at<Vec3b>(i, j)[2],
-            (int)image->at<Vec3b>(i + 1, j)[2],
-            (int)image->at<Vec3b>(i - 2, j)[2],
-            (int)image->at<Vec3b>(i, j + 1)[2],
-            (int)image->at<Vec3b>(i, j - 1)[2],
-            (int)image->at<Vec3b>(i + 1, j + 1)[2],
-            (int)image->at<Vec3b>(i + 1, j - 1)[2],
-            (int)image->at<Vec3b>(i - 1, j - 1)[2],
-            (int)image->at<Vec3b>(i - 1, j + 1)[2]};
-        float prom = 0;
-        for (int g = 0; g < 27; g++)
-        {
-            prom += arr[g];
-        }
-        prom = prom / 27;
-        float num = 0;
-        for (int g = 0; g < 27; g++)
-        {
-            num += (float)pow(arr[g] - prom, 2);
-        }
-
-        //var = sqrt((float)num / 27);
-        var = num / 27;
-        //std::cout<<var[k]<<std::endl;
+        prom += arr[g];
     }
-    return var;
+    prom = prom / 27;
+    float num = 0;
+    for (int g = 0; g < 27; g++)
+    {
+        num += (float)pow(arr[g] - prom, 2);
+    }
+
+    return sqrt((float)num / 27);
+    //var = num / 27;
+    //std::cout<<var[k]<<std::endl;
+
+    
+}
+
+bool verificar(Mat *image, int i, int j){
+    if(i<0 || j< 0){
+        return false;
+    }
+    if(i > image->rows - 1 || j > image->cols - 1){
+        return false;
+    }
+    return true;
 }
 void Crecimiento_Regiones_aux(Mat *image, Mat *reg, int i, int j, bool **est)
 {
-    if (((i >= 0 && j >= 0) && (i <= image->rows - 1 && j <= image->cols - 1)) && est[i][j] == false)
-    {   
+    //std::cout<< " i "<< i << " j "<<j<<" Cols "<<image->cols <<" rows " <<image->rows<<std::endl;
+    //std::cout<< est[i][j]<< std::endl;
+    if (verificar(image, i, j) && est[i][j] == 0)
+    {
         //calculate de var for the 3 chanels
-        //std::cout<< " i "<< i << " j "<< j<< " cols "<<image->cols<< " rows "<<image->rows<< std::endl;
+
         //std::cout<<est->at<Vec3b>(i, j)<<std::endl;
-        est[i][j] = true;
+        est[i][j] = 1;
         reg->at<Vec3b>(i, j) = image->at<Vec3b>(i, j);
         //reg->at<Vec3b>(i, j) = {255, 255, 255};
         float var = desviacion(image, i, j);
+
         //evaluating near pixels
         //right
-        if (evaluacion_pixel(image->at<Vec3b>(i, j),image->at<Vec3b>(i, j+1),abs(var - desviacion(image, i, j + 1))))
+        if (evaluacion_pixel(var, desviacion(image, i, j + 1)))
         {
             //std::cout<< " i "<< i << " j "<< j<< " j+1 "<<j+1<< std::endl;
             Crecimiento_Regiones_aux(image, reg, i, j + 1, est);
         }
-        else
+        else if(verificar(image, i, j+1))
         {
             reg->at<Vec3b>(i, j + 1)[0] = 0;
             reg->at<Vec3b>(i, j + 1)[1] = 0;
             reg->at<Vec3b>(i, j + 1)[2] = 0;
         }
         //left
-        if (evaluacion_pixel(image->at<Vec3b>(i, j),image->at<Vec3b>(i, j-1),abs(var - desviacion(image, i, j - 1))))
+        if (evaluacion_pixel(var, desviacion(image, i, j - 1)))
         {
             //std::cout<< " i "<< i << " j "<< j<< " j-1 "<<j-1<< std::endl;
             Crecimiento_Regiones_aux(image, reg, i, j - 1, est);
         }
-        else
+        else if(verificar(image, i, j-1))
         {
-            reg->at<Vec3b>(i, j + 1)[0] = 0;
-            reg->at<Vec3b>(i, j + 1)[1] = 0;
-            reg->at<Vec3b>(i, j + 1)[2] = 0;
+            reg->at<Vec3b>(i, j - 1)[0] = 0;
+            reg->at<Vec3b>(i, j - 1)[1] = 0;
+            reg->at<Vec3b>(i, j - 1)[2] = 0;
         }
 
         //up
-        if (evaluacion_pixel(image->at<Vec3b>(i, j),image->at<Vec3b>(i-1, j),abs(var - desviacion(image, i-1, j ))))
+        if (evaluacion_pixel(var , desviacion(image, i-1, j )))
         {
             //std::cout<< " i "<< i << " j "<< j<< " i-1 "<<i-1<< std::endl;
             Crecimiento_Regiones_aux(image, reg, i - 1, j, est);
         }
         else
         {
-            reg->at<Vec3b>(i, j + 1)[0] = 0;
-            reg->at<Vec3b>(i, j + 1)[1] = 0;
-            reg->at<Vec3b>(i, j + 1)[2] = 0;
-        }
+            reg->at<Vec3b>(i - 1, j)[0] = 0;
+            reg->at<Vec3b>(i - 1, j)[1] = 0;
+            reg->at<Vec3b>(i - 1, j)[2] = 0;
+        } 
 
         //down
-        if (evaluacion_pixel(image->at<Vec3b>(i, j),image->at<Vec3b>(i+1, j),abs(var - desviacion(image, i+1, j))))
+        if (evaluacion_pixel(var, desviacion(image, i + 1, j)))
         {
             //std::cout<< " i "<< i << " j "<< j<< " i+1 "<<i+1<< std::endl;
             Crecimiento_Regiones_aux(image, reg, i + 1, j, est);
         }
-        else
+        else if(verificar(image, i + 1, j))
         {
-            reg->at<Vec3b>(i, j + 1)[0] = 0;
-            reg->at<Vec3b>(i, j + 1)[1] = 0;
-            reg->at<Vec3b>(i, j + 1)[2] = 0;
+            reg->at<Vec3b>(i + 1, j)[0] = 0;
+            reg->at<Vec3b>(i + 1, j)[1] = 0;
+            reg->at<Vec3b>(i + 1, j)[2] = 0;
         }
-        //up right
-        if (evaluacion_pixel(image->at<Vec3b>(i, j),image->at<Vec3b>(i-1, j+1),abs(var - desviacion(image, i-1, j + 1))))
+        /*//up right
+        if (evaluacion_pixel(var , desviacion(image, i-1, j + 1)))
         {
             //std::cout<< " i "<< i << " j "<< j<< " i-1 "<<i-1 << " j+1 "<<j+1<< std::endl;
             Crecimiento_Regiones_aux(image, reg, i - 1, j + 1, est);
@@ -198,7 +213,7 @@ void Crecimiento_Regiones_aux(Mat *image, Mat *reg, int i, int j, bool **est)
         }
 
         //up left
-        if (evaluacion_pixel(image->at<Vec3b>(i, j),image->at<Vec3b>(i-1, j-1),abs(var - desviacion(image, i-1, j - 1))))
+        if (evaluacion_pixel(var ,desviacion(image, i-1, j - 1)))
         {
             //std::cout<< " i "<< i << " j "<< j<< " i-1 "<<i-1 << " j-1 "<<j-1<< std::endl;
             Crecimiento_Regiones_aux(image, reg, i - 1, j - 1, est);
@@ -210,7 +225,7 @@ void Crecimiento_Regiones_aux(Mat *image, Mat *reg, int i, int j, bool **est)
             reg->at<Vec3b>(i - 1, j - 1)[2] = 0;
         }
         //down right
-        if (evaluacion_pixel(image->at<Vec3b>(i, j),image->at<Vec3b>(i+1, j+1),abs(var - desviacion(image, i+1, j + 1))))
+        if (evaluacion_pixel(var , desviacion(image, i+1, j + 1)))
         {
             //std::cout<< " i "<< i << " j "<< j<< " i+1 "<<i+1 << " j+1 "<<j+1<< std::endl;
             Crecimiento_Regiones_aux(image, reg, i + 1, j + 1, est);
@@ -222,7 +237,7 @@ void Crecimiento_Regiones_aux(Mat *image, Mat *reg, int i, int j, bool **est)
             reg->at<Vec3b>(i + 1, j + 1)[2] = 0;
         }
         //down left
-        if (evaluacion_pixel(image->at<Vec3b>(i, j),image->at<Vec3b>(i+1, j-1),abs(var - desviacion(image, i+1, j - 1))))
+        if (evaluacion_pixel(var , desviacion(image, i+1, j - 1)))
         {
             //std:: << " i "<< i << " j "<< j<< " i+1 "<<i+1 << " j-1 "<<j-1<< std::endl;
             Crecimiento_Regiones_aux(image, reg, i + 1, j - 1, est);
@@ -232,14 +247,17 @@ void Crecimiento_Regiones_aux(Mat *image, Mat *reg, int i, int j, bool **est)
             reg->at<Vec3b>(i + 1, j - 1)[0] = 0;
             reg->at<Vec3b>(i + 1, j - 1)[1] = 0;
             reg->at<Vec3b>(i + 1, j - 1)[2] = 0;
-        }
+        } */
+    }else{
+       // std::cout<<"LESE"<<std::endl;
     }
+    return;
 }
 
-bool evaluacion_pixel(Vec3b punto1, Vec3b punto2,float criterio)
+bool evaluacion_pixel(float punto1, float punto2)
 {
-    //std::cout<<criterio<<std::endl;
-    if (abs(punto1[0] - punto2[0]) < criterio || abs(punto1[1] - punto2[1]) < criterio || abs(punto1[2] - punto2[2]) < criterio)
+    //std::cout<<punto1-punto2<<std::endl;
+    if (abs(punto1 - punto2) <= criterio)
     {
         return true;
     }

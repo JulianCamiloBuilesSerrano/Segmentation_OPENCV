@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named segmentacion
+
+# Build rule for target.
+segmentacion: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 segmentacion
+.PHONY : segmentacion
+
+# fast build rule for target.
+segmentacion/fast:
+	$(MAKE) -f CMakeFiles/segmentacion.dir/build.make CMakeFiles/segmentacion.dir/build
+.PHONY : segmentacion/fast
+
+#=============================================================================
 # Target rules for targets named Segmentacion_regiones
 
 # Build rule for target.
@@ -150,6 +163,33 @@ Segmentacion_regiones.cxx.s:
 	$(MAKE) -f CMakeFiles/Segmentacion_regiones.dir/build.make CMakeFiles/Segmentacion_regiones.dir/Segmentacion_regiones.cxx.s
 .PHONY : Segmentacion_regiones.cxx.s
 
+segmentacion.o: segmentacion.cxx.o
+
+.PHONY : segmentacion.o
+
+# target to build an object file
+segmentacion.cxx.o:
+	$(MAKE) -f CMakeFiles/segmentacion.dir/build.make CMakeFiles/segmentacion.dir/segmentacion.cxx.o
+.PHONY : segmentacion.cxx.o
+
+segmentacion.i: segmentacion.cxx.i
+
+.PHONY : segmentacion.i
+
+# target to preprocess a source file
+segmentacion.cxx.i:
+	$(MAKE) -f CMakeFiles/segmentacion.dir/build.make CMakeFiles/segmentacion.dir/segmentacion.cxx.i
+.PHONY : segmentacion.cxx.i
+
+segmentacion.s: segmentacion.cxx.s
+
+.PHONY : segmentacion.s
+
+# target to generate assembly for a file
+segmentacion.cxx.s:
+	$(MAKE) -f CMakeFiles/segmentacion.dir/build.make CMakeFiles/segmentacion.dir/segmentacion.cxx.s
+.PHONY : segmentacion.cxx.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -158,10 +198,14 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... segmentacion"
 	@echo "... Segmentacion_regiones"
 	@echo "... Segmentacion_regiones.o"
 	@echo "... Segmentacion_regiones.i"
 	@echo "... Segmentacion_regiones.s"
+	@echo "... segmentacion.o"
+	@echo "... segmentacion.i"
+	@echo "... segmentacion.s"
 .PHONY : help
 
 
