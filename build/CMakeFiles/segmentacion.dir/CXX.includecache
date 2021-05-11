@@ -13,6 +13,8 @@ stdlib.h
 -
 math.h
 -
+vector
+-
 opencv2/opencv.hpp
 -
 queue
